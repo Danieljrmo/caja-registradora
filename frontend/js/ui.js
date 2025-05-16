@@ -34,7 +34,13 @@ function mostrarSeccion(id) {
 }
 
 function volverAlMenu() {
-  document.getElementById('menuPrincipal').style.display = 'block';
+  const menu = document.getElementById('menuPrincipal');
+  menu.style.display = 'flex'; // mantener centrado
+  menu.style.flexDirection = 'column';
+  menu.style.justifyContent = 'center';
+  menu.style.alignItems = 'center';
+  
   document.getElementById('seccionRegistrar').style.display = 'none';
   document.getElementById('seccionConsultar').style.display = 'none';
 }
+

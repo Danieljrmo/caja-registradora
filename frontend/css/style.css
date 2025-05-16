@@ -1,4 +1,4 @@
-body {
+body, html {
   background-color: #263238;  /* Fondo oscuro */
   color: #ffffff;             /* Texto blanco */
   font-family: Arial, sans-serif;
@@ -102,24 +102,52 @@ th {
   cursor: pointer;
 }
 
+/* Centrar completamente el menú principal */
 #menuPrincipal {
+  height: 100vh; /* altura completa del viewport */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* centra verticalmente */
+  align-items: center;     /* centra horizontalmente */
   text-align: center;
-  margin-top: 50px;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
+/* Título del menú */
+#menuPrincipal h2 {
+  margin-bottom: 30px;
+  font-size: 32px;
+  color: #eaebeb;
+}
+
+/* Estilo de los botones */
 #menuPrincipal button {
-  width: 200px;
-  padding: 15px;
-  margin: 10px;
-  font-size: 16px;
-  border-radius: 8px;
-  background-color: #90caf9; /* celeste */
-  border: none;
+  width: 220px;
+  padding: 14px 24px;
+  margin: 10px 0;
+  font-size: 18px;
+  background-color: #1976d2; /* azul moderno */
   color: white;
-  font-weight: bold;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
+/* Hover con animación */
 #menuPrincipal button:hover {
-  background-color: #64b5f6;
+  background-color: #1565c0;
+  transform: scale(1.05);
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
