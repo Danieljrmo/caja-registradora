@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Ventas</title>
+  
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: 30px auto; }
+    input, button { padding: 8px; margin: 5px 0; width: 100%; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: left; }
+    th { background-color: #f0f0f0; }
+  </style>
+    
+    <!-- jsPDF para pdf -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- SheetJS para Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+</head>
+
+<body>
+  <h2>Registrar Venta</h2>
+  <input type="text" id="producto" placeholder="Nombre del producto" />
+  <input type="number" id="precio" placeholder="Precio" />
+  <input type="date" id="fecha" />
+  <button onclick="registrarVenta()">Guardar Venta</button>
+
+  <h2>Ventas del Día</h2>
+  <input type="date" id="fechaConsulta" />
+  <button onclick="consultarVentas()">Consultar</button>
+
+  <table id="tablaVentas" style="display:none;">
+    <thead>
+      <tr>
+        <th>Producto</th>
+        <th>Precio</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody id="ventasBody"></tbody>
+  </table>
+    
+  <h3 id="totalVentas" style="display: none;">Total del día: $0</h3>
+    
+  <!-- Botones para exportar datos -->
+  <button onclick="exportarPDF()">Exportar a PDF</button>
+  <button onclick="exportarExcel()">Exportar a Excel</button>
+    
+
+  <script>
+    const API_URL = 'http://localhost:3000/api';
+
+    async function registrarVenta() {
+      const producto = document.getElementById('producto').value;
+      const precio = document.getElementById('precio').value;
+      const fecha = document.getElementById('fecha').value;
+
+      if (!producto || !precio || !fecha) {
+        alert('Completa todos los campos');
+        return;
+      }
+
+      const res = await fetch(`${API_URL}/ventas`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ producto, precio, fecha })
+      });
+
+      const data = await res.json();
+      alert(data.message || 'Venta guardada');
+    }
+
+    async function consultarVentas() {
+      const fecha = document.getElementById('fechaConsulta').value;
+      if (!fecha) {
+        alert('Selecciona una fecha');
+        return;
+      }
+
+      const res = await fetch(`${API_URL}/ventas/dia/${fecha}`);
+      const ventas = await res.json();
+
+      const tabla = document.getElementById('tablaVentas');
+      const cuerpo = document.getElementById('ventasBody');
+      cuerpo.innerHTML = '';
+
+      if (ventas.length > 0) {
+        tabla.style.display = 'table';
+        ventas.forEach(v => {
+          const row = `<tr><td>${v.producto}</td><td>${v.precio}</td><td>${v.fecha}</td></tr>`;
+          cuerpo.innerHTML += row;
+        });
+      } else {
+        tabla.style.display = 'none';
+        alert('No hay ventas para esa fecha');
+      }
+    }
+    
+    // Función para exportar la tabla a PDF usando jsPDF
+    async function exportarPDF() {
+    // Verifica que la tabla esté visible
+    const tabla = document.getElementById('tablaVentas');
+    
+    if (tabla.style.display === 'none') {
+      alert('No hay datos para exportar');
+      return;
+    }
+
+    // Usamos jsPDF (accedemos a la función a través de jspdf.umd)
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Recopila el contenido de la tabla.
+    let contenido = '';
+    const rows = tabla.getElementsByTagName('tr');
+    for (let i = 0; i < rows.length; i++) {
+      const cols = rows[i].querySelectorAll('th, td');
+      let filaTexto = [];
+      cols.forEach(col => {
+        filaTexto.push(col.innerText);
+      });
+      contenido += filaTexto.join(' \t ') + '\n';
+    }
+
+    // Añade el contenido al PDF
+    doc.text(contenido, 10, 10);
+    // Guarda el PDF con el nombre ventas.pdf
+    doc.save('ventas.pdf');
+  }
+
+  // Función para exportar la tabla a Excel usando SheetJS
+    function exportarExcel() {
+    const tabla = document.getElementById('tablaVentas');
+    if (tabla.style.display === 'none') {
+      alert('No hay datos para exportar');
+      return;
+    }
+    // Convierte la tabla HTML en una hoja de cálculo
+    const workbook = XLSX.utils.table_to_book(tabla, { sheet: "Ventas" });
+    // Escribe el archivo Excel y lo descarga
+    XLSX.writeFile(workbook, 'ventas.xlsx');
+  }
+  </script>
+  
+  <script src="js/app.js"></script>
+
+</body>
+</html>
