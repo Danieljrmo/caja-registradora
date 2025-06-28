@@ -16,7 +16,7 @@
 
   <!-- MENÚ PRINCIPAL -->
   <div id="menuPrincipal">
-    <h2>Menú Principal</h2>
+    <h2>Caja registradora</h2>
     <button onclick="mostrarSeccion('seccionRegistrar')">📝 Registrar Venta</button>
     <button onclick="mostrarSeccion('seccionConsultar')">📊 Consultar Ventas</button>
 
@@ -39,6 +39,15 @@
     <input type="date" id="fechaConsulta" />
     <button onclick="consultarVentas()">Consultar</button>
 
+    <h3>Buscar por Rango de Fechas</h3>
+    <label for="fechaInicio">Desde:</label>
+    <input type="date" id="fechaInicio">
+
+    <label for="fechaFin">Hasta:</label>
+    <input type="date" id="fechaFin">
+
+  <button onclick="buscarPorRango()">Buscar</button>
+
     <table id="tablaVentas" style="display:none;">
       <thead>
         <tr>
@@ -60,6 +69,8 @@
     <br>
     <button onclick="volverAlMenu()">Volver al menú</button>
   </div>
+  
+
 
   <!-- Scripts -->
   <script src="js/api.js"></script>

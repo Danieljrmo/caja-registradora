@@ -60,6 +60,19 @@ router.get('/total/:fecha', async (req, res) => {
   }
 });
 
+router.get('/rango', (req, res) => {
+  const { desde, hasta } = req.query;
+  const query = 'SELECT * FROM ventas WHERE fecha BETWEEN ? AND ?';
+
+  connection.query(query, [desde, hasta], (err, results) => {
+    if (err) {
+      console.error('Error al consultar por rango:', err);
+      return res.status(500).json({ error: 'Error del servidor' });
+    }
+    res.json(results);
+  });
+});
+
 
 module.exports = router;
 
